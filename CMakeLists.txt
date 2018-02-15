@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 2.8)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(SYSTEM_CALL_LIB_NAME systemcall)
+project(${SYSTEM_CALL_LIB_NAME})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+add_executable(SystemCall src/system_call.cpp)
