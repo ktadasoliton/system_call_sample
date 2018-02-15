@@ -1,61 +1,66 @@
   // Copyright 2018 Kota Tada
 #include "systemcall/system_call.h"
-#include <windows.h>
+#include <signal.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <string>
 
-void FileWrite(std::string event_message) {
+void FileWrite(std::string message) {
   FILE *fp;
   errno_t err_no;
   std::string path = "system_call_out.txt";
-
-  err_no = fopen_s(&fp, path.c_str(), "a");
-  if (err_no == 0) {
-    fprintf(fp, event_message.c_str());
+  if ((fp = fopen(path.c_str(), "a")) != NULL) {
+    fprintf(fp, "%s", message.c_str());
     fclose(fp);
   }
 }
 
-BOOL CtrlHandler(DWORD fdwCtrlType) {
-  std::string message;
-  switch (fdwCtrlType) {
-  case CTRL_C_EVENT:
-    message = "Ctrl-C event\n";
-    printf("%s", message.c_str());
-    FileWrite(message);
-    return TRUE;
-  case CTRL_CLOSE_EVENT:
-    message = "Ctrl-Close event\n";
-    printf("%s", message.c_str());
-    FileWrite(message);
-    return TRUE;
-  case CTRL_BREAK_EVENT:
-    message = "Ctrl-Break event\n";
-    printf("%s", message.c_str());
-    FileWrite(message);
-    return TRUE;
-  case CTRL_LOGOFF_EVENT:
-    message = "Ctrl-Logoff event\n";
-    printf("%s", message.c_str());
-    FileWrite(message);
-    return TRUE;
-  case CTRL_SHUTDOWN_EVENT:
-    message = "Ctrl-Shutdown event\n";
-    printf("%s", message.c_str());
-    FileWrite(message);
-    return TRUE;
-  default:
-    return FALSE;
+void SignalHandler(int signal_value) {
+  std::string message, value;
+  switch (signal_value) {
+  case SIGINT:
+    message = "catch signal SIGINT";
+    printf("%s\n", message.c_str());
+    FileWrite(message+"\n");
+    break;
+  case SIGHUP:
+    message = "catch signal SIGHUP";
+    printf("%s\n", message.c_str());
+    FileWrite(message+"\n");
+    break;
+  case SIGQUIT:
+    message = "catch signal SIGQUIT";
+    printf("%s\n", message.c_str());
+    FileWrite(message+"\n");
+    break;
+  case SIGABRT:
+    message = "catch signal SIGABRT";
+    printf("%s\n", message.c_str());
+    FileWrite(message+"\n");
+    break;
+  case SIGKILL:
+    message = "catch signal SIGKILL";
+    printf("%s\n", message.c_str());
+    FileWrite(message+"\n");
+    break;
+  case SIGTERM:
+    message = "catch signal SIGTERM";
+    printf("%s\n", message.c_str());
+    FileWrite(message+"\n");
+    break;
   }
 }
 
-int main(void) {
-  if (SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, TRUE) == FALSE) {
-    printf("faild set CtrlHandler\n");
-  }
+void SetSignal() {
+  // signal(SIGINT, SignalHandler);
+  signal(SIGHUP, SignalHandler);
+  return;
+}
 
+int main(void) {
+  SetSignal();
   while (1) {
     printf("main is Working...\n");
-    Sleep(1000);
+    sleep(1);
   }
 }
