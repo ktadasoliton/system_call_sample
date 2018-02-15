@@ -52,8 +52,12 @@ void SignalHandler(int signal_value) {
 }
 
 void SetSignal() {
-  // signal(SIGINT, SignalHandler);
+  signal(SIGINT, SignalHandler);
   signal(SIGHUP, SignalHandler);
+  signal(SIGQUIT, SignalHandler);
+  signal(SIGABRT, SignalHandler);
+  signal(SIGKILL, SignalHandler);
+  signal(SIGTERM, SignalHandler);
   return;
 }
 
